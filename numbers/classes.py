@@ -100,7 +100,7 @@ class Hidden_Neuron(object):
 
     def give(self, nxt_row):
         for neuron in self.linkto:
-            objlst[neuron].take(self.id, self.activation)
+            nxt_row[neuron].take(self.id, self.activation)
 
     def take(self, id, activity):
         if id not in self.linkfrom:
