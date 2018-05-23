@@ -9,9 +9,10 @@ images, labels = mndata.load_training()
 neuron_id = 0
 value_of_neuron = 0
 end_row = Row(3, 10)
-hidden_row_1 = Row(2, 16, end_row)
-hidden_row_2 = Row(1, 16, hidden_row_1)
-init_row = Row(0, 784, hidden_row_2)
+hidden_row_2 = Row(2, 16, end_row)
+hidden_row_1 = Row(1, 16, hidden_row_2)
+init_row = Row(0, 784, hidden_row_1)
+
 
 network = [init_row, hidden_row_1, hidden_row_2, end_row]
 
