@@ -11,6 +11,7 @@ class Row(object):
         self.num = num
         self.length = length
         self.neurons = {}
+        self.linklst = []
         self.next_row = next_row
 
     def calc(self):
@@ -25,6 +26,8 @@ class Row(object):
             self.next_row.calc()
             self.next_row.send()
         if not self.next_row:
+            max = 0
+            max_val = 0
             print("-" * 10 + " Results! " + "-" * 10)
             for key, neuron in self.neurons.items():
                 print(
@@ -34,6 +37,29 @@ class Row(object):
                         neuron.activation
                     )
                 )
+                if neuron.activation > max_val:
+                    max = neuron.value
+                    max_val = neuron.activation
+            print("the computer thinks this is: " + str(max))
+
+    def link(self):
+        if self.next_row:
+            print(
+                "Linking Row " + str(
+                    self.num
+                ) + " to " + str(
+                    self.next_row.num
+                )
+            )
+            for key, val in self.next_row.neurons.items():
+                self.linklst.append(key)
+            for key, neuron in self.neurons.items():
+                neuron.linkto = self.linklst
+                neuron.give(self.next_row.neurons)
+            self.next_row.link()
+
+        else:
+            print("All Rows Linked")
 
 
 class Start_Neuron(object):
@@ -45,6 +71,7 @@ class Start_Neuron(object):
 
     def give(self, objlst):
         for neuron in self.linkto:
+            print(str(self.id) + " giving val to " + str(neuron))
             objlst[neuron].take(self.id, self.activation)
 
 
@@ -55,13 +82,13 @@ class End_Neuron(object):
         self.row = row
         self.linkfrom = []
         self.activation = 0
-        self.bias = -1
+        self.bias = 0
         self.activations = {}
         self.weights = {}
 
     def scramble(self):
-        for key in self.activations.items():
-            self.weights[key] = r.randint(-1, 1)
+        for key, val in self.activations.items():
+            self.weights[key] = r.randint(0, 1)
 
     def take(self, id, activity):
         if id not in self.linkfrom:
@@ -83,24 +110,26 @@ class Hidden_Neuron(object):
         self.linkto = []
         self.linkfrom = []
         self.activation = 0
-        self.bias = -1
+        self.bias = 0
         self.activations = {}
         self.weights = {}
 
     def scramble(self):
-        for key in self.activations.items():
-            self.weights[key] = r.randint(-1, 1)
+        for key, val in self.activations.items():
+            self.weights[key] = r.randint(0, 1)
 
     def calculate(self):
         update = 0
         for key, value in self.activations.items():
             update += value * self.weights[key]
+
         self.activation = sigmoid(update - self.bias)
         return self.activation
 
-    def give(self, nxt_row):
+    def give(self, objlst):
         for neuron in self.linkto:
-            nxt_row[neuron].take(self.id, self.activation)
+            print(str(self.id) + " giving val to " + str(neuron))
+            objlst[neuron].take(self.id, self.activation)
 
     def take(self, id, activity):
         if id not in self.linkfrom:

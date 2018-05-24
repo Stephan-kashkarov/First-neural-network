@@ -1,5 +1,9 @@
-from classes import Start_Neuron, Hidden_Neuron, End_Neuron, Row, sigmoid
-import math as m
+from classes import (
+    Start_Neuron,
+    Hidden_Neuron,
+    End_Neuron,
+    Row
+)
 from mnist import MNIST
 import random as r
 
@@ -12,7 +16,6 @@ end_row = Row(3, 10)
 hidden_row_2 = Row(2, 16, end_row)
 hidden_row_1 = Row(1, 16, hidden_row_2)
 init_row = Row(0, 784, hidden_row_1)
-
 
 network = [init_row, hidden_row_1, hidden_row_2, end_row]
 
@@ -41,6 +44,9 @@ while True:
         break
     neuron_id += 1
 
+print("-" * 10 + " Linking rows " + "-" * 10)
+network[0].link()
+
 print("-" * 10 + " Initializing Weights " + "-" * 10)
 for row in network:
     if row != network[0]:
@@ -51,22 +57,24 @@ for row in network:
 
 
 print("-" * 10 + " Initializing Initial Activations " + "-" * 10)
-index = r.randrange(0, len(images) - 1)
+index = r.randrange(0, len(images))
 for key, neuron in init_row.neurons.items():
-    neuron.activation = sigmoid(images[index][key] - 1)
+    neuron.activation = images[index][key]
     print(
         str(
             neuron.id
-        ) + " was updated with: " + str(sigmoid(images[index][key] - 1))
+        ) + " was updated with: " + str(images[index][key])
     )
 
 print("-" * 10 + " Running network " + "-" * 10)
 init_row.send()
+print("The actual value is: " + str(labels[index]))
 
 loop = input("\nWhat now? (run/scramble/quit/img/next): ")
 while True:
     if loop == "run":
         init_row.send()
+        print("The actual value is: " + str(labels[index]))
     elif loop == "img":
         print(mndata.display(images[index]))
     elif loop == "scramble":
@@ -79,14 +87,14 @@ while True:
                     neuron.scramble()
     elif loop == "next":
         print("-" * 10 + " Initializing Image " + "-" * 10)
-        index = r.randrange(0, len(images) - 1)
+        index = r.randrange(0, len(images))
         for key, neuron in init_row.neurons.items():
-            neuron.activation = sigmoid(images[index][key] - 1)
+            neuron.activation = images[index][key]
             print(
                 str(
                     neuron.id
                 ) + " was updated with: " + str(
-                    sigmoid(images[index][key] - 1)
+                    images[index][key]
                 )
             )
     elif loop == "quit":
